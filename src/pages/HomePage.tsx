@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthService from '../services/AuthService';
 
 const HomePage: React.FC = () => {
@@ -12,6 +12,11 @@ const HomePage: React.FC = () => {
     navigate('/login'); // Redirect to login page after logout
   };
  
+  const handleProfile = ()=>{
+  navigate('/profile');
+  }
+  
+ 
   return (
     
     <div>
@@ -21,6 +26,8 @@ const HomePage: React.FC = () => {
         <>
           <p>You are logged in!</p>
           <button onClick={handleLogout}>Logout</button>
+          
+          <button onClick={handleProfile}>Profile</button>
         </>
       ) : (
         <>

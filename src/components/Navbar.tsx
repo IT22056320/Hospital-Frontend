@@ -23,6 +23,10 @@ const Navbar: React.FC = () => {
               <>
                 <Nav.Link as={Link} to="/login">Login</Nav.Link>
                 <Nav.Link as={Link} to="/register">Register</Nav.Link>
+                <Nav.Link as={Link} to="/staff-form">Staff Create</Nav.Link>
+                <Nav.Link as={Link} to="/staff-list">Staff List</Nav.Link>
+                <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
+                
               </>
             ) : (
               <>
