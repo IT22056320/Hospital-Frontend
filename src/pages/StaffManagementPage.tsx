@@ -12,6 +12,8 @@ interface IStaff {
   schedule: string;
 }
 
+const roles = ['Doctor', 'Nurse', 'Admin', 'Technician', 'Receptionist'];
+
 const StaffManagementPage: React.FC = () => {
   const navigate = useNavigate();
 
@@ -27,7 +29,7 @@ const StaffManagementPage: React.FC = () => {
   });
 
   // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setStaff((prevState) => ({ ...prevState, [name]: value }));
   };
@@ -72,7 +74,7 @@ const StaffManagementPage: React.FC = () => {
         </Form.Group>
 
         <Form.Group controlId="formEmail">
-          <Form.Label>Email address</Form.Label>
+          <Form.Label>Email</Form.Label>
           <Form.Control
             type="email"
             placeholder="Enter email"
@@ -98,13 +100,19 @@ const StaffManagementPage: React.FC = () => {
         <Form.Group controlId="formRole">
           <Form.Label>Role</Form.Label>
           <Form.Control
-            type="text"
-            placeholder="Enter role (e.g., Doctor, Nurse)"
+            as="select"
             name="role"
             value={staff.role}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">Select Role</option>
+            {roles.map((role) => (
+              <option key={role} value={role}>
+                {role}
+              </option>
+            ))}
+          </Form.Control>
         </Form.Group>
 
         <Form.Group controlId="formContactInformation">

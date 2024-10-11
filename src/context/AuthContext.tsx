@@ -5,7 +5,6 @@ interface AuthContextType {
   user: { username: string; email: string } | null;
   login: (user: { username: string; email: string }) => void;
   logout: () => void;
-  setUser: React.Dispatch<React.SetStateAction<{ username: string; email: string } | null>>;
   isAuthenticated: boolean;
 }
 
@@ -14,7 +13,6 @@ const initialAuthContext: AuthContextType = {
   user: null,
   login: () => {},
   logout: () => {},
-  setUser: () => {},
   isAuthenticated: false,
 };
 
@@ -29,18 +27,20 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ childr
   const [user, setUser] = useState<{ username: string; email: string } | null>(null);
 
   // Derive `isAuthenticated` from the presence of a user
-  const isAuthenticated = !!user;
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   // Function to handle login
   const login = (user: { username: string; email: string }) => {
     setUser(user);
-    localStorage.setItem('user', JSON.stringify(user)); // Optionally persist user data in localStorage
+    localStorage.setItem('user', JSON.stringify(user));
+    setIsAuthenticated(true);
   };
 
   // Function to handle logout
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user'); // Clear the persisted user data
+    setIsAuthenticated(false);
   };
 
   // Load user from localStorage if available on app load (optional)
@@ -48,11 +48,15 @@ export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ childr
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+      setUser(null);
     }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, setUser, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

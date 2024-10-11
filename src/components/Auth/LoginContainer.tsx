@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../../services/AuthService';
 import Login from './Login';
+import { useAuth } from '../../context/AuthContext';
 
 const LoginContainer: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const navigate = useNavigate(); // Hook for navigation
+  const { login } = useAuth();
 
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -14,6 +16,7 @@ const LoginContainer: React.FC = () => {
       // Store the token or user data after successful login
       if (result.token) {
         localStorage.setItem('token', result.token); // Store token in localStorage
+        login({ username: email, email });
         setMessage('Login successful! Redirecting to Homepage...');
         
         // Redirect to profile or another protected route

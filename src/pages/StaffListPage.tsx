@@ -55,6 +55,11 @@ const StaffListPage: React.FC = () => {
     }
   };
 
+  // Handle view details
+  const handleViewDetails = (id: string) => {
+    navigate(`/staff-details/${id}`); // Navigate to the staff details page with the staff ID
+  };
+
   return (
     <div>
       <h1>Staff Members</h1>
@@ -89,6 +94,13 @@ const StaffListPage: React.FC = () => {
                 <td>{staff.department}</td>
                 <td>{staff.schedule}</td>
                 <td>
+                  <Button
+                    variant="info"
+                    className="me-2"
+                    onClick={() => handleViewDetails(staff._id)} // Navigate to details page
+                  >
+                    View Details
+                  </Button>
                   <Button
                     variant="warning"
                     className="me-2"
