@@ -21,7 +21,7 @@ const RegisterContainer: React.FC = () => {
         response.token // Also pass the token here
       );
       setMessage('Registration successful! Redirecting to login...');
-      navigate('/patient-dashboard');
+      navigate('/login');
     } catch (error: any) {
       console.log(error);
       setMessage(error.response?.data?.message || 'Registration failed');

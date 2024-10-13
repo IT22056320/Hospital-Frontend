@@ -24,6 +24,10 @@ import DoctorDashboard from './pages/DoctorDashboard'; // Doctor Dashboard
 import AdminDashboard from './pages/AdminDashboard'; // Admin Dashboard
 import NurseDashboard from './pages/NurseDashboard'; // Nurse Dashboard
 import PatientDashboard from './pages/PatientDashboard';
+import PatientListPage from './pages/PatientListPage';
+import PatientDiagnosisPage from './pages/PatientDiagnosisPage';
+import UpdateDiagnosisPage from './pages/UpdateDiagnosisPage';
+import DiagnosisListPage from './pages/DiagnosisListPage ';
 
 const App: React.FC = () => {
   return (
@@ -44,6 +48,10 @@ const App: React.FC = () => {
           <Route path="/payment/bank-deposit" element={<BankDepositForm />} />
           <Route path="/choose-payment" element={<ChoosePaymentMethod />} />
           <Route path="/staff/:staffId/schedule" element={<StaffSchedulePage />} />
+          <Route path="/patient-list" element={<PatientListPage />} />
+          <Route path="/patient-diagnosis/:id" element={<PatientDiagnosisPage />} />
+          <Route path="/update-diagnosis/:id" element={<UpdateDiagnosisPage />} />
+          <Route path="/patient-diagnoses/:patientId" element={<DiagnosisListPage />} />
 
           {/* Profile route with basic protection */}
           <Route

@@ -34,6 +34,9 @@ const Navbar: React.FC = () => {
                 <Nav.Link as={Link} to="/staff-details">Staff Details</Nav.Link>
                 <Nav.Link as={Link} to="/doctor-list">Doctor Details</Nav.Link>
                 <Nav.Link as={Link} to="/appointments">Appointment Details</Nav.Link>
+                <Nav.Link as={Link} to="/patient-list">Patinet Details</Nav.Link>
+                
+                
                
                 <Button variant="danger" onClick={handleLogout} className="ms-2">Logout</Button>
               </>

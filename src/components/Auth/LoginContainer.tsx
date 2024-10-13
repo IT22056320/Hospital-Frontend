@@ -51,7 +51,11 @@ const LoginContainer: React.FC = () => {
           setTimeout(() => {
             navigate('/nurse-dashboard');
           }, 2000);
-        } else {
+        } else if (result.staffDetails.role === USER_ROLES.PATIENT) {  // Add this check for patients
+          setTimeout(() => {
+            navigate('/patient-dashboard');
+          }, 2000);
+        }else {
           setTimeout(() => {
             navigate('/'); // Default redirect
           }, 2000);

@@ -11,7 +11,7 @@ interface IStaff {
   department: string;
 }
 
-const roles = ['Doctor', 'Nurse', 'Admin', 'Technician', 'Receptionist'];
+const roles = ['DOCTER', 'NURSE', 'ADMIN'];
 
 const StaffManagementPage: React.FC = () => {
   const navigate = useNavigate();
