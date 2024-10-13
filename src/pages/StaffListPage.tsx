@@ -109,6 +109,13 @@ const StaffListPage: React.FC = () => {
                     Update
                   </Button>
                   <Button
+                    variant="info"
+                    className="me-2"
+                    onClick={() => navigate(`/staff/${staff._id}/schedule`)} // Navigate to schedule page
+                  >
+                    View Schedule
+                  </Button>
+                  <Button
                     variant="danger"
                     onClick={() => handleDelete(staff._id)} // Handle staff deletion
                   >

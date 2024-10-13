@@ -9,7 +9,6 @@ interface IStaff {
   role: string;
   contactInformation: string;
   department: string;
-  schedule: string;
 }
 
 const roles = ['Doctor', 'Nurse', 'Admin', 'Technician', 'Receptionist'];
@@ -25,7 +24,7 @@ const StaffManagementPage: React.FC = () => {
     role: '',
     contactInformation: '',
     department: '',
-    schedule: '',
+    
   });
 
   // Handle input changes
@@ -139,17 +138,6 @@ const StaffManagementPage: React.FC = () => {
           />
         </Form.Group>
 
-        <Form.Group controlId="formSchedule">
-          <Form.Label>Schedule</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter schedule"
-            name="schedule"
-            value={staff.schedule}
-            onChange={handleChange}
-            required
-          />
-        </Form.Group>
 
         <Button variant="primary" type="submit" className="mt-3">
           Create Staff

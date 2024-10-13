@@ -2,10 +2,11 @@ import React, { createContext, useState, ReactNode, useEffect, useContext } from
 
 // Define the shape of your context, including setUser
 interface AuthContextType {
-  user: { username: string; email: string } | null;
-  login: (user: { username: string; email: string }) => void;
+  user: { username: string; email: string; role: string } | null;
+  login: (user: { username: string; email: string; role: string }, token: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  role: string | null;
 }
 
 // Initial context value
@@ -14,6 +15,7 @@ const initialAuthContext: AuthContextType = {
   login: () => {},
   logout: () => {},
   isAuthenticated: false,
+  role: null,
 };
 
 // Create the context
@@ -24,39 +26,46 @@ interface AuthContextProviderProps {
 }
 
 export const AuthContextProvider: React.FC<AuthContextProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<{ username: string; email: string } | null>(null);
-
-  // Derive `isAuthenticated` from the presence of a user
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [user, setUser] = useState<{ username: string; email: string; role: string } | null>(null);
+  const [role, setRole] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Function to handle login
-  const login = (user: { username: string; email: string }) => {
+  const login = (user: { username: string; email: string; role: string }, token: string) => {
     setUser(user);
+    setRole(user.role);
     localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('token', token); // Store token in localStorage
     setIsAuthenticated(true);
   };
 
   // Function to handle logout
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user'); // Clear the persisted user data
+    setRole(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('token'); // Clear token on logout
     setIsAuthenticated(false);
   };
 
-  // Load user from localStorage if available on app load (optional)
+  // Load user and role from localStorage if available on app load
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    const token = localStorage.getItem('token'); // Check for token
+    if (storedUser && token) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      setRole(parsedUser.role);
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
       setUser(null);
+      setRole(null);
     }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, role }}>
       {children}
     </AuthContext.Provider>
   );

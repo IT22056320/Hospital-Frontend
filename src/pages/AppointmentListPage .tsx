@@ -2,10 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
+// Define the IStaff interface to match the populated staff details
+interface IStaff {
+  _id: string;
+  name: string;
+  email: string;
+  specialization?: string;
+  role: string;
+}
+
+// Define the IAppointment interface to match the backend response
 interface IAppointment {
   _id: string;
-  doctorId: string;
-  doctorName: string;
+  staffId: IStaff | string; // staffId can either be populated staff object or just an ID
   date: string;
   time: string;
   reason: string;
@@ -27,7 +36,8 @@ const AppointmentListPage: React.FC = () => {
         throw new Error('Failed to fetch appointments');
       }
       const data = await response.json();
-      setAppointments(data);
+      console.log(data); 
+      setAppointments(data); // Set the fetched appointments into state
     } catch (error) {
       console.error('Error fetching appointments:', error);
     }
@@ -46,6 +56,7 @@ const AppointmentListPage: React.FC = () => {
         throw new Error('Failed to delete appointment');
       }
 
+      // Update the appointment list after deletion
       setAppointments((prevList) => prevList.filter((appointment) => appointment._id !== id));
     } catch (error) {
       console.error('Error deleting appointment:', error);
@@ -53,7 +64,7 @@ const AppointmentListPage: React.FC = () => {
   };
 
   const handleUpdate = (id: string) => {
-    navigate(`/update-appointment/${id}`);
+    navigate(`/update-appointment/${id}`); // Navigate to the update appointment page
   };
 
   return (
@@ -63,9 +74,12 @@ const AppointmentListPage: React.FC = () => {
         <thead>
           <tr>
             <th>Doctor Name</th>
+            <th>Doctor Email</th>
+            <th>Specialization</th>
             <th>Date</th>
             <th>Time</th>
             <th>Reason</th>
+            <th>Patient Name</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -73,10 +87,14 @@ const AppointmentListPage: React.FC = () => {
           {appointments.length > 0 ? (
             appointments.map((appointment) => (
               <tr key={appointment._id}>
-                <td>{appointment.doctorName}</td>
-                <td>{appointment.date}</td>
+                {/* Check if staffId is populated and has the doctor details */}
+                <td>{typeof appointment.staffId === 'object' ? appointment.staffId.name : 'Unknown Doctor'}</td>
+                <td>{typeof appointment.staffId === 'object' ? appointment.staffId.email : 'Unknown'}</td>
+                <td>{typeof appointment.staffId === 'object' && appointment.staffId.specialization ? appointment.staffId.specialization : 'N/A'}</td>
+                <td>{new Date(appointment.date).toLocaleDateString()}</td>
                 <td>{appointment.time}</td>
                 <td>{appointment.reason}</td>
+                <td>{appointment.patientName}</td>
                 <td>
                   <Button variant="warning" className="me-2" onClick={() => handleUpdate(appointment._id)}>
                     Update
@@ -89,7 +107,7 @@ const AppointmentListPage: React.FC = () => {
             ))
           ) : (
             <tr>
-              <td colSpan={5}>No appointments found.</td>
+              <td colSpan={8}>No appointments found.</td>
             </tr>
           )}
         </tbody>

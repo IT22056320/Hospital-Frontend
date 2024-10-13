@@ -1,5 +1,6 @@
+// src/pages/Login.tsx
 import React, { useState } from 'react';
-import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Card, Alert } from 'react-bootstrap';
 
 interface LoginProps {
   handleLogin: (email: string, password: string) => void;
@@ -14,8 +15,6 @@ const Login: React.FC<LoginProps> = ({ handleLogin, message }) => {
     e.preventDefault();
     handleLogin(email, password);
   };
-
-
 
   return (
     <Container fluid className="vh-100 d-flex justify-content-center align-items-center bg-light">
