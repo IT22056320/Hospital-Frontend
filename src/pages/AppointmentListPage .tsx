@@ -35,12 +35,19 @@ const AppointmentListPage: React.FC = () => {
         throw new Error('Failed to fetch appointments');
       }
       const data = await response.json();
-      setAppointments(data);
+  
+      // Sort appointments by date, assuming the appointment date is used for sorting
+      const sortedAppointments = data.sort((a: IAppointment, b: IAppointment) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+  
+      setAppointments(sortedAppointments);
     } catch (error) {
       console.error('Error fetching appointments:', error);
       setMessage('Error fetching appointments. Please try again later.');
     }
   };
+  
 
   const handleCancel = async (id: string) => {
     const confirmed = window.confirm('Are you sure you want to cancel this appointment?');
