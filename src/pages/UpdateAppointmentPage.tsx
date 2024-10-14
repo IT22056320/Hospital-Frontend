@@ -7,7 +7,7 @@ interface AppointmentFormState {
   time: string;
   reason: string;
   patientName: string;
-  doctorId: string;
+  doctorId: string; // Assuming you will still need this
 }
 
 const UpdateAppointmentPage: React.FC = () => {
@@ -23,7 +23,9 @@ const UpdateAppointmentPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchAppointment();
+    if (id) {
+      fetchAppointment();
+    }
   }, [id]);
 
   const fetchAppointment = async () => {
@@ -31,7 +33,14 @@ const UpdateAppointmentPage: React.FC = () => {
       const response = await fetch(`http://localhost:3000/api/v1/appointments/${id}`);
       if (response.ok) {
         const data = await response.json();
-        setAppointmentData(data);
+        // Assuming the API returns the necessary fields
+        setAppointmentData({
+          date: data.date.split('T')[0], // Format date to YYYY-MM-DD for input
+          time: data.time,
+          reason: data.reason,
+          patientName: data.patientName,
+          doctorId: data.staffId, // Assuming staffId is used for doctorId
+        });
       } else {
         setMessage('Failed to fetch appointment');
       }
@@ -42,34 +51,45 @@ const UpdateAppointmentPage: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setAppointmentData({
-      ...appointmentData,
+    setAppointmentData((prevData) => ({
+      ...prevData,
       [name]: value,
-    });
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const response = await fetch(`http://localhost:3000/api/v1/appointments/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(appointmentData),
-      });
+    console.log('Submitting appointment data:', appointmentData);
 
-      if (response.ok) {
-        setMessage('Appointment updated successfully!');
-        navigate('/appointments');
-      } else {
-        const errorData = await response.json();
-        setMessage(`Error: ${errorData.message}`);
-      }
-    } catch (error) {
-      setMessage('Error updating appointment. Please try again later.');
+    // Check for required fields before sending
+    if (!appointmentData.date || !appointmentData.time || !appointmentData.reason || !appointmentData.patientName) {
+        setMessage('Please fill in all fields.');
+        return;
     }
-  };
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/v1/appointments/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(appointmentData),
+        });
+
+        if (response.ok) {
+            setMessage('Appointment updated successfully!');
+            navigate('/appointments');
+        } else {
+            const errorData = await response.json();
+            console.error('Update failed:', errorData); // Log the error for debugging
+            setMessage(`Error: ${errorData.message || 'An error occurred'}`);
+        }
+    } catch (error) {
+        console.error('Error updating appointment:', error); // Log the error for debugging
+        setMessage('Error updating appointment. Please try again later.');
+    }
+};
+
 
   return (
     <Container>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card } from 'react-bootstrap';
+import { Button, Card, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 interface IDoctor {
@@ -18,43 +18,49 @@ interface IDoctor {
 
 const DoctorListPage: React.FC = () => {
   const [doctorList, setDoctorList] = useState<IDoctor[]>([]);
-  const navigate = useNavigate(); // For navigation
+  const [filteredDoctors, setFilteredDoctors] = useState<IDoctor[]>([]);
+  const [selectedDepartment, setSelectedDepartment] = useState<string>('All');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchDoctorsWithDetails(); // Fetch doctors and their additional details on component mount
+    fetchDoctorsWithDetails();
   }, []);
 
-  // Fetch basic doctor information from the staff API and their additional details
+  useEffect(() => {
+    // Filter the doctor list based on the selected department
+    if (selectedDepartment === 'All') {
+      setFilteredDoctors(doctorList);
+    } else {
+      setFilteredDoctors(
+        doctorList.filter((doctor) => doctor.department === selectedDepartment)
+      );
+    }
+  }, [selectedDepartment, doctorList]);
+
   const fetchDoctorsWithDetails = async () => {
     try {
-      // Fetch the list of doctors from the staff API
       const response = await fetch('http://localhost:3000/api/v1/staff?role=Doctor');
-      if (!response.ok) {
-        throw new Error('Failed to fetch doctors');
-      }
-      const doctors = await response.json();
+      if (!response.ok) throw new Error('Failed to fetch doctors');
 
-      // Fetch additional details for each doctor from the staff-details API
+      const doctors = await response.json();
       const doctorsWithDetails = await Promise.all(
         doctors.map(async (doctor: IDoctor) => {
           const details = await fetchDoctorDetails(doctor._id);
-          return { ...doctor, ...details }; // Merge doctor data with additional details
+          return { ...doctor, ...details };
         })
       );
-
       setDoctorList(doctorsWithDetails);
+      setFilteredDoctors(doctorsWithDetails); // Initially show all doctors
     } catch (error) {
       console.error('Error fetching doctors:', error);
     }
   };
 
-  // Fetch additional doctor details from the staff-details API
   const fetchDoctorDetails = async (doctorId: string) => {
     try {
       const response = await fetch(`http://localhost:3000/api/v1/staff-details/${doctorId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch doctor details');
-      }
+      if (!response.ok) throw new Error('Failed to fetch doctor details');
+
       const details = await response.json();
       return {
         workExperience: details.workExperience || '',
@@ -64,42 +70,126 @@ const DoctorListPage: React.FC = () => {
       };
     } catch (error) {
       console.error('Error fetching doctor details:', error);
-      return null; // Return null if fetching details fails
+      return null;
     }
   };
 
-  // Handle book appointment
   const handleBookAppointment = (doctorId: string) => {
-    // Navigate to the BookAppointmentPage with the doctorId as the staffId
     navigate(`/book-appointment/${doctorId}`);
   };
 
+  const departmentOptions = [
+    'All',
+    'General Physician',
+    'Gynecologist',
+    'Dermatologist',
+    'Pediatricians',
+    'Neurologist',
+    'Gastroenterologist',
+  ];
+
   return (
-    <div>
+    <Container fluid>
       <h1>Doctors</h1>
-      {doctorList.length > 0 ? (
-        doctorList.map((doctor) => (
-          <Card key={doctor._id} className="mb-3">
-            <Card.Body>
-              <Card.Title>{doctor.name}</Card.Title>
-              <Card.Text><strong>Email:</strong> {doctor.email}</Card.Text>
-              <Card.Text><strong>Contact Information:</strong> {doctor.contactInformation}</Card.Text>
-              <Card.Text><strong>Department:</strong> {doctor.department}</Card.Text>
-              <Card.Text><strong>Schedule:</strong> {doctor.schedule}</Card.Text>
-              <Card.Text><strong>Work Experience:</strong> {doctor.workExperience}</Card.Text>
-              <Card.Text><strong>Degree:</strong> {doctor.degree}</Card.Text>
-              <Card.Text><strong>Specialization:</strong> {doctor.specialization}</Card.Text>
-              <Card.Text><strong>About:</strong> {doctor.about}</Card.Text>
-              <Button variant="primary" onClick={() => handleBookAppointment(doctor._id)}>
-                Book Appointment
-              </Button>
-            </Card.Body>
-          </Card>
-        ))
-      ) : (
-        <p>No doctors found.</p>
-      )}
-    </div>
+      <Row>
+        {/* Left Sidebar for Filter Buttons */}
+        <Col md={3} className="d-flex flex-column align-items-start">
+          {departmentOptions.map((dept) => (
+            <Button
+              key={dept}
+              onClick={() => setSelectedDepartment(dept)}
+              className={`mb-3 ${selectedDepartment === dept ? 'active' : ''}`}
+              style={{
+                width: '100%',
+                borderRadius: '20px',
+                backgroundColor: selectedDepartment === dept ? 'blue' : 'white',
+                color: selectedDepartment === dept ? 'white' : 'blue',
+                border: '2px solid blue',
+                padding: '10px 20px',
+                textAlign: 'left',
+              }}
+            >
+              {dept}
+            </Button>
+          ))}
+        </Col>
+
+        {/* Doctor Cards */}
+        <Col md={9}>
+          {filteredDoctors.length > 0 ? (
+            filteredDoctors.map((doctor) => (
+              <Card
+                key={doctor._id}
+                className="mb-4"
+                style={{
+                  borderColor: 'blue',
+                  borderWidth: '2px',
+                  borderRadius: '10px',
+                  boxShadow: '0 4px 8px rgba(0, 0, 255, 0.2)', // subtle shadow with blue tint
+                }}
+              >
+              <Card.Body>
+                <Card.Title style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+                  {doctor.name}
+                </Card.Title>
+
+                {/* Email Section with Icon */}
+                <Card.Text className="d-flex align-items-center">
+                  <i className="bi bi-envelope-fill" style={{ marginRight: '8px', color: 'blue' }}></i>
+                  <span style={{ fontWeight: 'bold' }}>Email: </span> {doctor.email}
+                </Card.Text>
+
+                {/* Contact Section */}
+                <Card.Text className="d-flex align-items-center">
+                  <i className="bi bi-telephone-fill" style={{ marginRight: '8px', color: 'blue' }}></i>
+                  <span style={{ fontWeight: 'bold' }}>Contact: </span> {doctor.contactInformation}
+                </Card.Text>
+
+                {/* Schedule Section */}
+                <Card.Text className="d-flex align-items-center">
+                  <i className="bi bi-calendar3" style={{ marginRight: '8px', color: 'blue' }}></i>
+                  <span style={{ fontWeight: 'bold' }}>Schedule: </span> {doctor.schedule}
+                </Card.Text>
+
+                {/* Work Experience Section */}
+                <Card.Text className="d-flex align-items-center">
+                  <i className="bi bi-briefcase-fill" style={{ marginRight: '8px', color: 'blue' }}></i>
+                  <span style={{ fontWeight: 'bold' }}>Experience: </span> {doctor.workExperience} years
+                </Card.Text>
+
+                {/* Degree Section */}
+                <Card.Text className="d-flex align-items-center">
+                  <i className="bi bi-mortarboard-fill" style={{ marginRight: '8px', color: 'blue' }}></i>
+                  <span style={{ fontWeight: 'bold' }}>Degree: </span> {doctor.degree}
+                </Card.Text>
+
+                {/* Specialization Section */}
+                <Card.Text className="d-flex align-items-center">
+                  <i className="bi bi-award-fill" style={{ marginRight: '8px', color: 'blue' }}></i>
+                  <span style={{ fontWeight: 'bold' }}>Specialization: </span> {doctor.specialization}
+                </Card.Text>
+
+                {/* Book Appointment Button */}
+                <Button
+                  variant="primary"
+                  style={{
+                    borderRadius: '20px',
+                    backgroundColor: 'blue',
+                    borderColor: 'blue',
+                  }}
+                  onClick={() => handleBookAppointment(doctor._id)}
+                >
+                  Book Appointment
+                </Button>
+              </Card.Body>
+              </Card>
+            ))
+          ) : (
+            <p>No doctors found.</p>
+          )}
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

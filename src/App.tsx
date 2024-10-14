@@ -28,6 +28,7 @@ import PatientListPage from './pages/PatientListPage';
 import PatientDiagnosisPage from './pages/PatientDiagnosisPage';
 import UpdateDiagnosisPage from './pages/UpdateDiagnosisPage';
 import DiagnosisListPage from './pages/DiagnosisListPage ';
+import UpdateAppointmentPage from './pages/UpdateAppointmentPage';
 
 const App: React.FC = () => {
   return (
@@ -44,6 +45,7 @@ const App: React.FC = () => {
           <Route path="/doctor-list" element={<DoctorListPage />} />
           <Route path="/book-appointment/:staffId" element={<BookAppointmentPage />} />
           <Route path="/appointments" element={<AppointmentListPage />} />
+          <Route path="/update-appointment/:id" element={<UpdateAppointmentPage />} />
           <Route path="/payment/credit-card" element={<StripePayment />} />
           <Route path="/payment/bank-deposit" element={<BankDepositForm />} />
           <Route path="/choose-payment" element={<ChoosePaymentMethod />} />
