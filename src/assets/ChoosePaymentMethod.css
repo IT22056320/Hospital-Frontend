@@ -1,0 +1,36 @@
+.choose-payment-container {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(2, 9, 31, 0.1);
+    padding: 20px;
+  }
+  
+  h2 {
+    font-size: 1.8rem;
+    color: #184068;
+  }
+  
+  .custom-btn {
+    background-color: #2963f9; /* Dark Blue for both buttons */
+    border-color: #2963f9; /* Match border color */
+    color: white; /* White text */
+    font-size: 1.2rem;
+    border-radius: 5px;
+  }
+  
+  .custom-btn:hover {
+    background-color: #002244; /* Darker blue on hover */
+    border-color: #002244;
+    color: #f8f9fa;
+  }
+  
+  @media (max-width: 576px) {
+    h2 {
+      font-size: 1.5rem;
+    }
+  
+    .custom-btn {
+      font-size: 1rem;
+    }
+  }
+  

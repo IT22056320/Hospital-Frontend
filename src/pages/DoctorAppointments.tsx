@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Container, Row, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 import { FaCalendarAlt, FaClock, FaPen, FaUser } from 'react-icons/fa'; // Import icons
 
 // Define the IStaff interface to match the populated staff details
@@ -22,10 +21,9 @@ interface IAppointment {
   patientName: string;
 }
 
-const AppointmentListPage: React.FC = () => {
+const DoctorAppointments: React.FC = () => {
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
   const [message, setMessage] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAppointments();
@@ -72,10 +70,6 @@ const AppointmentListPage: React.FC = () => {
     }
   };
 
-  const handleUpdate = (id: string) => {
-    navigate(`/update-appointment/${id}`);
-  };
-
   // Inline CSS for the component
   const cardStyle = {
     borderColor: '#2963f9',
@@ -83,13 +77,6 @@ const AppointmentListPage: React.FC = () => {
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 255, 0.2)', 
     backgroundColor: "#dce9ff"
-  };
-
-  const updateButtonStyle = {
-    backgroundColor: '#A8E6CF', 
-    border: '2px solid #4CAF50',
-    borderRadius: '50px', 
-    color: 'black',
   };
 
   const cancelButtonStyle = {
@@ -138,13 +125,6 @@ const AppointmentListPage: React.FC = () => {
   
                   <div className="mt-3">
                     <Button
-                      style={updateButtonStyle} 
-                      className="me-2" 
-                      onClick={() => handleUpdate(appointment._id)}
-                    >
-                      Update
-                    </Button>
-                    <Button
                       style={cancelButtonStyle} 
                       onClick={() => handleCancel(appointment._id)}
                     >
@@ -169,4 +149,4 @@ const AppointmentListPage: React.FC = () => {
   );
 };
 
-export default AppointmentListPage;
+export default DoctorAppointments;

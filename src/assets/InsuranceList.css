@@ -1,0 +1,127 @@
+/* src/assets/InsuranceList.css */
+.insurance-list-container {
+    margin: 20px; /* Add margin around the container */
+    background-color: #f8f9fa; /* Light background for the container */
+    border-radius: 10px; /* Rounded corners for the container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  }
+  
+  /* Responsive Table Styles */
+  .table {
+    width: 100%; /* Full width for the table */
+    border-collapse: collapse; /* Merge borders for a cleaner look */
+    margin-bottom: 20px; /* Space below the table */
+  }
+  
+  .table th,
+  .table td {
+    text-align: center; /* Center align text in table cells */
+    padding: 12px; /* Add padding for better spacing */
+    border: 2px solid #0056b3; /* Add border to cells */
+  }
+  
+  /* Header Styles */
+  .table th {
+    background-color: #b9c2e8; /* Blue background for headers */
+    color: rgb(6, 1, 1); /* Text color for contrast */
+    font-weight: bold; /* Bold text for headers */
+    border-bottom: 2px solid #0056b3; /* Darker border for bottom of header */
+  }
+  
+  /* Row Styles */
+  .table tr:nth-child(even) {
+    background-color: #f2f2f2; /* Light grey for even rows */
+  }
+  
+  .table tr:hover {
+    background-color: #e2e6ea; /* Highlight row on hover */
+  }
+  
+  /* Button Styles */
+  .table .btn {
+    padding: 6px 12px; /* Padding for buttons */
+    font-size: 14px; /* Font size for buttons */
+    border-radius: 5px; /* Rounded corners for buttons */
+  }
+  
+  /* Edit Button */
+  .table .btn-warning {
+    background-color: #4107ff; /* Blue background for Edit button */
+    border: none; /* No border */
+  }
+  
+  .table .btn-warning:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  
+  /* Delete Button */
+  .table .btn-danger {
+    background-color: #dc3545; /* Red background for Delete button */
+    border: none; /* No border */
+  }
+  
+  .table .btn-danger:hover {
+    background-color: #c82333; /* Darker red on hover */
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 576px) {
+    .table {
+      display: none; /* Hide the standard table for mobile */
+    }
+  
+    .mobile-insurance-card {
+      border: 1px solid #dee2e6; /* Add border for card */
+      border-radius: 5px; /* Round the corners */
+      padding: 15px; /* Add padding */
+      margin-bottom: 15px; /* Add margin between cards */
+      background-color: #ffffff; /* White background for cards */
+    }
+  
+    .mobile-actions {
+      display: flex; /* Flex layout for actions */
+      justify-content: space-between; /* Space actions evenly */
+    }
+  
+    h5 {
+      margin: 0; /* Remove margin for h5 elements in mobile cards */
+    }
+  
+    p {
+      margin: 5px 0; /* Add vertical spacing for paragraphs */
+    }
+  
+    /* Mobile Edit Button */
+    .mobile-actions .btn-warning {
+      background-color: #4107ff; /* Same color for Edit button in mobile */
+      border: none; /* No border */
+    }
+  
+    .mobile-actions .btn-warning:hover {
+      background-color: #0056b3; /* Same hover color for Edit button in mobile */
+    }
+  
+    /* Mobile Delete Button */
+    .mobile-actions .btn-danger {
+      background-color: #dc3545; /* Same color for Delete button in mobile */
+      border: none; /* No border */
+    }
+  
+    .mobile-actions .btn-danger:hover {
+      background-color: #c82333; /* Same hover color for Delete button in mobile */
+    }
+  }
+  
+  /* Resize Start Date and End Date columns for web view */
+  @media (min-width: 577px) {
+    .table th:nth-child(6), /* Start Date */
+    .table td:nth-child(6) {
+      width: 120px; /* Set width for Start Date */
+    }
+  
+    .table th:nth-child(7), /* End Date */
+    .table td:nth-child(7) {
+      width: 120px; /* Set width for End Date */
+    }
+  }
+  

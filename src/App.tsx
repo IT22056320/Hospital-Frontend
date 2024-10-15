@@ -28,6 +28,16 @@ import PatientListPage from './pages/PatientListPage';
 import PatientDiagnosisPage from './pages/PatientDiagnosisPage';
 import UpdateDiagnosisPage from './pages/UpdateDiagnosisPage';
 import DiagnosisListPage from './pages/DiagnosisListPage ';
+import PaymentForm from './pages/PaymentForm';
+import InsuranceManagement from './pages/InsuranceManagement';
+import PaymentList from './pages/PaymentList';
+import WorkSchedule from './pages/WorkSchedule';
+import UpdateAppointmentPage from './pages/UpdateAppointmentPage';
+import AboutPage from './pages/AboutPage';
+import DoctorAppointments from './pages/DoctorAppointments';
+import AdminPatientPage from './pages/AdminPatientPage';
+import DiagnosisDetailsPage from './pages/DiagnosisDetailsPage';
+
 
 const App: React.FC = () => {
   return (
@@ -52,7 +62,15 @@ const App: React.FC = () => {
           <Route path="/patient-diagnosis/:id" element={<PatientDiagnosisPage />} />
           <Route path="/update-diagnosis/:id" element={<UpdateDiagnosisPage />} />
           <Route path="/patient-diagnoses/:patientId" element={<DiagnosisListPage />} />
-
+          <Route path="/payment-form" element={<PaymentForm />} />
+          <Route path="/insurance" element={<InsuranceManagement />} />
+          <Route path="/payment-list" element={<PaymentList />} />
+          <Route path="/work-schedule/:staffId" element={<WorkSchedule />} />
+          <Route path="/update-appointment/:id" element={<UpdateAppointmentPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/docotr-appointments" element={<DoctorAppointments />} />
+          <Route path="/admin-patients" element={<AdminPatientPage />} />
+          <Route path="/diagnosis-details/:diagnosisId" element={<DiagnosisDetailsPage />} />
           {/* Profile route with basic protection */}
           <Route
             path="/profile"

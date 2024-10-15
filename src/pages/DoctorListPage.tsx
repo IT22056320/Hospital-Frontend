@@ -9,7 +9,6 @@ interface IDoctor {
   email: string;
   contactInformation: string;
   department: string;
-  schedule: string;
   workExperience: string;
   about: string;
   degree: string;
@@ -28,7 +27,7 @@ const DoctorListPage: React.FC = () => {
   const fetchDoctorsWithDetails = async () => {
     try {
       // Fetch the list of doctors from the staff API
-      const response = await fetch('http://localhost:3000/api/v1/staff?role=Doctor');
+      const response = await fetch('http://localhost:3000/api/v1/staff?role=DOCTOR');
       if (!response.ok) {
         throw new Error('Failed to fetch doctors');
       }
@@ -85,7 +84,6 @@ const DoctorListPage: React.FC = () => {
               <Card.Text><strong>Email:</strong> {doctor.email}</Card.Text>
               <Card.Text><strong>Contact Information:</strong> {doctor.contactInformation}</Card.Text>
               <Card.Text><strong>Department:</strong> {doctor.department}</Card.Text>
-              <Card.Text><strong>Schedule:</strong> {doctor.schedule}</Card.Text>
               <Card.Text><strong>Work Experience:</strong> {doctor.workExperience}</Card.Text>
               <Card.Text><strong>Degree:</strong> {doctor.degree}</Card.Text>
               <Card.Text><strong>Specialization:</strong> {doctor.specialization}</Card.Text>

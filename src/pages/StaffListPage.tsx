@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Container, Row, Col, FormControl, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable'; // Import autoTable for generating tables in PDF
 
 interface IStaff {
   _id: string;
@@ -9,16 +11,21 @@ interface IStaff {
   role: string;
   contactInformation: string;
   department: string;
-  schedule: string;
 }
 
 const StaffListPage: React.FC = () => {
   const [staffList, setStaffList] = useState<IStaff[]>([]);
-  const navigate = useNavigate(); // For navigation
+  const [filteredStaff, setFilteredStaff] = useState<IStaff[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchStaff();
   }, []);
+
+  useEffect(() => {
+    handleSearch(searchQuery);
+  }, [searchQuery, staffList]);
 
   // Fetch staff members from the backend
   const fetchStaff = async () => {
@@ -28,9 +35,25 @@ const StaffListPage: React.FC = () => {
         throw new Error('Failed to fetch staff');
       }
       const data = await response.json();
-      setStaffList(Array.isArray(data) ? data : []);
+      
+      // Filter out staff with role of 'PATIENT'
+      const filteredStaff = data.filter((staff: IStaff) => staff.role !== 'PATIENT');
+      setStaffList(Array.isArray(filteredStaff) ? filteredStaff : []);
+      setFilteredStaff(Array.isArray(filteredStaff) ? filteredStaff : []);
     } catch (error) {
       console.error('Error fetching staff:', error);
+    }
+  };
+
+  // Handle search
+  const handleSearch = (query: string) => {
+    if (!query) {
+      setFilteredStaff(staffList); // If no query, show all staff
+    } else {
+      const filtered = staffList.filter((staff) =>
+        staff.name.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredStaff(filtered);
     }
   };
 
@@ -60,79 +83,184 @@ const StaffListPage: React.FC = () => {
     navigate(`/staff-details/${id}`); // Navigate to the staff details page with the staff ID
   };
 
-  return (
-    <div>
-      <h1>Staff Members</h1>
-      <Button
-        variant="primary"
-        onClick={() => navigate('/staff-form')} // Navigate to the form page to add new staff
-        className="mb-3"
-      >
-        Add New Staff
-      </Button>
+  // Handle schedule view
+  const handleViewSchedule = (id: string) => {
+    navigate(`/work-schedule/${id}`); // Navigate to the staff schedule page with the staff ID
+  };
 
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Contact Information</th>
-            <th>Department</th>
-            <th>Schedule</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {staffList.length > 0 ? (
-            staffList.map((staff) => (
-              <tr key={staff._id}>
-                <td>{staff.name}</td>
-                <td>{staff.email}</td>
-                <td>{staff.role}</td>
-                <td>{staff.contactInformation}</td>
-                <td>{staff.department}</td>
-                <td>{staff.schedule}</td>
-                <td>
-                  <Button
-                    variant="info"
-                    className="me-2"
-                    onClick={() => handleViewDetails(staff._id)} // Navigate to details page
-                  >
-                    View Details
-                  </Button>
-                  <Button
-                    variant="warning"
-                    className="me-2"
-                    onClick={() => navigate(`/staff-update/${staff._id}`)} // Navigate to update form
-                  >
-                    Update
-                  </Button>
-                  <Button
-                    variant="info"
-                    className="me-2"
-                    onClick={() => navigate(`/staff/${staff._id}/schedule`)} // Navigate to schedule page
-                  >
-                    View Schedule
-                  </Button>
-                  <Button
-                    variant="danger"
-                    onClick={() => handleDelete(staff._id)} // Handle staff deletion
-                  >
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={7}>No staff members found.</td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
-    </div>
+  // Handle add new staff
+  const handleAddNewStaff = () => {
+    navigate('/staff-form'); // Navigate to add staff form
+  };
+
+  // Generate PDF
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    doc.text('Staff List', 10, 10);
+
+    const rows = filteredStaff.map((staff, index) => [
+      index + 1,
+      staff.name,
+      staff.email,
+      staff.role,
+      staff.contactInformation,
+      staff.department,
+    ]);
+
+    (doc as any).autoTable({
+      head: [['#', 'Name', 'Email', 'Role', 'Contact Info', 'Department']],
+      body: rows,
+    });
+
+    doc.save('staff-list.pdf');
+  };
+
+  return (
+    <Container fluid className="pt-4">
+      <Row className="justify-content-center mb-4">
+        <Col xs={12} className="text-center">
+          <h1 className="mb-4" style={styles.heading}>Staff Members</h1>
+          <Button
+            variant="primary"
+            onClick={handleAddNewStaff}
+            className="mb-4 btn-lg"
+            style={styles.addButton}
+          >
+            Add New Staff
+          </Button>
+        </Col>
+      </Row>
+
+      <Row className="justify-content-center mb-4">
+        <Col xs={12} md={8} lg={6}>
+          <Form>
+            <FormControl
+              type="text"
+              placeholder="Search by name"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={styles.searchInput}
+            />
+          </Form>
+        </Col>
+        <Col xs={12} className="text-center">
+          <Button
+            variant="success"
+            onClick={generatePDF}
+            className="mb-4 btn-lg"
+            style={styles.pdfButton}
+          >
+            Generate PDF
+          </Button>
+        </Col>
+      </Row>
+
+      <Row className="justify-content-center">
+        <Col xs={12} md={10} lg={8}>
+          <div className="table-responsive-md shadow-lg p-3 mb-5 bg-white rounded">
+            <Table striped bordered hover responsive="md" className="table-hover text-center">
+              <thead className="table-primary text-white">
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Contact Info</th>
+                  <th>Department</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredStaff.length > 0 ? (
+                  filteredStaff.map((staff) => (
+                    <tr key={staff._id} className="bg-gray-100 hover:bg-gray-200 transition duration-200 ease-in-out">
+                      <td className="py-2">{staff.name}</td>
+                      <td className="py-2">{staff.email}</td>
+                      <td className="py-2">{staff.role}</td>
+                      <td className="py-2">{staff.contactInformation}</td>
+                      <td className="py-2">{staff.department}</td>
+                      <td className="py-2">
+                        <Button
+                          variant="info"
+                          className="me-2 mb-2 bg-blue-500 hover:bg-blue-600 text-white"
+                          onClick={() => handleViewDetails(staff._id)}
+                          style={styles.actionButton}
+                        >
+                          View
+                        </Button>
+                        <Button
+                          variant="warning"
+                          className="me-2 mb-2 bg-yellow-500 hover:bg-yellow-600 text-white"
+                          onClick={() => navigate(`/staff-update/${staff._id}`)}
+                          style={styles.actionButton}
+                        >
+                          Update
+                        </Button>
+                        <Button
+                          variant="info"
+                          className="me-2 mb-2 bg-green-500 hover:bg-green-600 text-white"
+                          onClick={() => handleViewSchedule(staff._id)}
+                          style={styles.actionButton}
+                        >
+                          Schedule
+                        </Button>
+                        <Button
+                          variant="danger"
+                          className="mb-2 bg-red-500 hover:bg-red-600 text-white"
+                          onClick={() => handleDelete(staff._id)}
+                          style={styles.actionButton}
+                        >
+                          Delete
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="text-center">
+                      No staff members found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </Table>
+          </div>
+        </Col>
+      </Row>
+    </Container>
   );
+};
+
+// Inline CSS for additional styling
+const styles = {
+  heading: {
+    color: '#007bff',
+    fontSize: '2.5rem',
+    fontWeight: 'bold',
+  },
+  addButton: {
+    borderRadius: '8px',
+    padding: '10px 20px',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    transition: 'background-color 0.3s',
+  },
+  searchInput: {
+    marginBottom: '20px',
+    width: '100%',
+  },
+  pdfButton: {
+    borderRadius: '8px',
+    padding: '10px 20px',
+    backgroundColor: '#28a745',
+    color: '#fff',
+    border: 'none',
+    transition: 'background-color 0.3s',
+  },
+  actionButton: {
+    borderRadius: '8px',
+    padding: '5px 10px',
+  },
 };
 
 export default StaffListPage;

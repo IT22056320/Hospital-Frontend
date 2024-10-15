@@ -1,0 +1,91 @@
+.insurance-form-container {
+    background-color: #ffffff; /* Set to white background */
+    border-radius: 20px; /* Smooth rounded corners */
+    padding: 40px; /* Adequate padding for spacing */
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    max-width: 600px; /* Set max width for a card-like layout */
+    margin: 50px auto; /* Center the form */
+    border: 8px solid #007bff; /* Border similar to the screenshot */
+    position: relative; /* For absolute positioned children */
+}
+
+h2 {
+    color: #000000; /* Slightly darker heading for better visibility */
+    font-weight: bold;
+    text-align: center; /* Center the heading text */
+}
+
+p {
+    color: #000000;
+    font-weight: 600;
+}
+
+.insurance-form-container form {
+    padding: 20px;
+    background-color: #dce9ff; /* Light background for the form */
+}
+
+.insurance-form-container .form-group {
+    margin-bottom: 25px; /* Add more spacing between fields */
+}
+
+.insurance-form-container .form-label {
+    font-size: 1rem; /* Set a medium font size */
+    font-weight: 600;
+    color: #000000;
+}
+
+.insurance-form-container .form-control {
+    padding: 15px;
+    border-radius: 10px; /* Rounded inputs */
+    border: 2px solid #ccc; /* Subtle borders */
+    font-size: 1rem; /* Input text size */
+    box-shadow: none;
+}
+
+.insurance-form-container .form-control:focus {
+    border-color: #007bff; /* Blue border on focus */
+    box-shadow: none; /* Disable focus shadow */
+}
+
+.insurance-form-container button[type="submit"] {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 15px;
+    font-size: 1.2rem;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.insurance-form-container button[type="submit"]:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.insurance-form-container button[type="submit"]:active {
+    background-color: #003f7f; /* Even darker blue on click */
+}
+
+/* Styling for the mobile layout */
+@media (max-width: 576px) {
+    .insurance-form-container {
+        padding: 25px;
+        border-width: 6px; /* Adjust border width for small screens */
+    }
+
+    .insurance-form-container .form-group {
+        margin-bottom: 20px; /* Adjust spacing for small screens */
+    }
+
+    .insurance-form-container .form-control {
+        padding: 12px;
+        font-size: 0.9rem; /* Slightly reduce font size on small screens */
+    }
+
+    .insurance-form-container button[type="submit"] {
+        padding: 12px;
+        font-size: 1rem; /* Adjust button size for mobile */
+    }
+}
