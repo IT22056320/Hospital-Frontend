@@ -7,7 +7,7 @@ interface AppointmentFormState {
   time: string;
   reason: string;
   patientName: string;
-  doctorId: string;
+  doctorId: string; 
 }
 
 const UpdateAppointmentPage: React.FC = () => {
@@ -19,11 +19,14 @@ const UpdateAppointmentPage: React.FC = () => {
     patientName: '',
     doctorId: '',
   });
+  const [validated, setValidated] = useState(false); 
   const [message, setMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchAppointment();
+    if (id) {
+      fetchAppointment();
+    }
   }, [id]);
 
   const fetchAppointment = async () => {
@@ -31,7 +34,13 @@ const UpdateAppointmentPage: React.FC = () => {
       const response = await fetch(`http://localhost:3000/api/v1/appointments/${id}`);
       if (response.ok) {
         const data = await response.json();
-        setAppointmentData(data);
+        setAppointmentData({
+          date: data.date.split('T')[0], 
+          time: data.time,
+          reason: data.reason,
+          patientName: data.patientName,
+          doctorId: data.staffId, 
+        });
       } else {
         setMessage('Failed to fetch appointment');
       }
@@ -40,16 +49,35 @@ const UpdateAppointmentPage: React.FC = () => {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setAppointmentData({
-      ...appointmentData,
+    setAppointmentData((prevData) => ({
+      ...prevData,
       [name]: value,
-    });
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
+    
+    if (!form.checkValidity()) {
+      e.stopPropagation();
+      setValidated(true);
+      return;
+    }
+
+    if (!appointmentData.date || !appointmentData.time || !appointmentData.reason || !appointmentData.patientName) {
+      setMessage('Please fill in all fields.');
+      return;
+    }
+
+    const namePattern = /^[A-Za-z\s]+$/; 
+    if (!namePattern.test(appointmentData.patientName)) {
+      setMessage('Patient name can only contain letters and spaces.');
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:3000/api/v1/appointments/${id}`, {
         method: 'PUT',
@@ -64,20 +92,32 @@ const UpdateAppointmentPage: React.FC = () => {
         navigate('/appointments');
       } else {
         const errorData = await response.json();
-        setMessage(`Error: ${errorData.message}`);
+        setMessage(`Error: ${errorData.message || 'An error occurred'}`);
       }
     } catch (error) {
       setMessage('Error updating appointment. Please try again later.');
     }
+    setValidated(true); 
   };
 
   return (
-    <Container>
-      <h2>Update Appointment</h2>
+    <Container 
+      style={{
+        marginTop: '30px',
+        backgroundColor: '#f0f4ff', 
+        padding: '25px', 
+        borderRadius: '10px', 
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', 
+        backgroundImage: 'linear-gradient(135deg, #e6e9ff 0%, #fefefe 100%)',
+      }}
+    >
+      <h2 style={{ color: '#0056b3', marginBottom: '20px', fontWeight: 'bold', textAlign: 'center' }}>
+        Update Appointment
+      </h2>
       {message && <Alert variant={message.startsWith('Error') ? 'danger' : 'success'}>{message}</Alert>}
-      <Form onSubmit={handleSubmit}>
+      <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Form.Group as={Row} className="mb-3" controlId="formDate">
-          <Form.Label column sm={2}>Date:</Form.Label>
+          <Form.Label column sm={2} style={{ fontWeight: 'bold' }}>Date:</Form.Label>
           <Col sm={10}>
             <Form.Control
               type="date"
@@ -85,12 +125,14 @@ const UpdateAppointmentPage: React.FC = () => {
               value={appointmentData.date}
               onChange={handleInputChange}
               required
+              style={{ borderRadius: '6px', padding: '10px', borderColor: '#ccc' }}
             />
+            <Form.Control.Feedback type="invalid">Please provide a valid date.</Form.Control.Feedback>
           </Col>
         </Form.Group>
 
         <Form.Group as={Row} className="mb-3" controlId="formTime">
-          <Form.Label column sm={2}>Time:</Form.Label>
+          <Form.Label column sm={2} style={{ fontWeight: 'bold' }}>Time:</Form.Label>
           <Col sm={10}>
             <Form.Control
               type="time"
@@ -98,12 +140,14 @@ const UpdateAppointmentPage: React.FC = () => {
               value={appointmentData.time}
               onChange={handleInputChange}
               required
+              style={{ borderRadius: '6px', padding: '10px', borderColor: '#ccc' }}
             />
+            <Form.Control.Feedback type="invalid">Please select a valid time.</Form.Control.Feedback>
           </Col>
         </Form.Group>
 
         <Form.Group as={Row} className="mb-3" controlId="formReason">
-          <Form.Label column sm={2}>Reason:</Form.Label>
+          <Form.Label column sm={2} style={{ fontWeight: 'bold' }}>Reason:</Form.Label>
           <Col sm={10}>
             <Form.Control
               type="text"
@@ -111,12 +155,14 @@ const UpdateAppointmentPage: React.FC = () => {
               value={appointmentData.reason}
               onChange={handleInputChange}
               required
+              style={{ borderRadius: '6px', padding: '10px', borderColor: '#ccc' }}
             />
+            <Form.Control.Feedback type="invalid">Please provide a reason for the appointment.</Form.Control.Feedback>
           </Col>
         </Form.Group>
 
         <Form.Group as={Row} className="mb-3" controlId="formPatientName">
-          <Form.Label column sm={2}>Patient Name:</Form.Label>
+          <Form.Label column sm={2} style={{ fontWeight: 'bold' }}>Patient Name:</Form.Label>
           <Col sm={10}>
             <Form.Control
               type="text"
@@ -124,11 +170,27 @@ const UpdateAppointmentPage: React.FC = () => {
               value={appointmentData.patientName}
               onChange={handleInputChange}
               required
+              pattern="[A-Za-z\s]+"
+              style={{ borderRadius: '6px', padding: '10px', borderColor: '#ccc' }}
             />
+            <Form.Control.Feedback type="invalid">Patient name can only contain letters and spaces.</Form.Control.Feedback>
           </Col>
         </Form.Group>
 
-        <Button variant="primary" type="submit">
+        <Button 
+          variant="primary" 
+          type="submit" 
+          style={{ 
+            width: '100%', 
+            padding: '10px', 
+            borderRadius: '8px', 
+            backgroundColor: '#0056b3',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', 
+            fontSize: '18px',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#004494'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0056b3'}
+        >
           Update Appointment
         </Button>
       </Form>

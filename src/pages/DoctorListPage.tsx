@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card } from 'react-bootstrap';
+import { Button, Card, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 interface IDoctor {
@@ -17,13 +17,25 @@ interface IDoctor {
 
 const DoctorListPage: React.FC = () => {
   const [doctorList, setDoctorList] = useState<IDoctor[]>([]);
-  const navigate = useNavigate(); // For navigation
+  const [filteredDoctors, setFilteredDoctors] = useState<IDoctor[]>([]);
+  const [selectedDepartment, setSelectedDepartment] = useState<string>('All');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchDoctorsWithDetails(); // Fetch doctors and their additional details on component mount
+    fetchDoctorsWithDetails();
   }, []);
 
-  // Fetch basic doctor information from the staff API and their additional details
+  useEffect(() => {
+    // Filter the doctor list based on the selected department
+    if (selectedDepartment === 'All') {
+      setFilteredDoctors(doctorList);
+    } else {
+      setFilteredDoctors(
+        doctorList.filter((doctor) => doctor.department === selectedDepartment)
+      );
+    }
+  }, [selectedDepartment, doctorList]);
+
   const fetchDoctorsWithDetails = async () => {
     try {
       // Fetch the list of doctors from the staff API
@@ -33,27 +45,25 @@ const DoctorListPage: React.FC = () => {
       }
       const doctors = await response.json();
 
-      // Fetch additional details for each doctor from the staff-details API
+      const doctors = await response.json();
       const doctorsWithDetails = await Promise.all(
         doctors.map(async (doctor: IDoctor) => {
           const details = await fetchDoctorDetails(doctor._id);
-          return { ...doctor, ...details }; // Merge doctor data with additional details
+          return { ...doctor, ...details };
         })
       );
-
       setDoctorList(doctorsWithDetails);
+      setFilteredDoctors(doctorsWithDetails); // Initially show all doctors
     } catch (error) {
       console.error('Error fetching doctors:', error);
     }
   };
 
-  // Fetch additional doctor details from the staff-details API
   const fetchDoctorDetails = async (doctorId: string) => {
     try {
       const response = await fetch(`http://localhost:3000/api/v1/staff-details/${doctorId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch doctor details');
-      }
+      if (!response.ok) throw new Error('Failed to fetch doctor details');
+
       const details = await response.json();
       return {
         workExperience: details.workExperience || '',
@@ -63,18 +73,26 @@ const DoctorListPage: React.FC = () => {
       };
     } catch (error) {
       console.error('Error fetching doctor details:', error);
-      return null; // Return null if fetching details fails
+      return null;
     }
   };
 
-  // Handle book appointment
   const handleBookAppointment = (doctorId: string) => {
-    // Navigate to the BookAppointmentPage with the doctorId as the staffId
     navigate(`/book-appointment/${doctorId}`);
   };
 
+  const departmentOptions = [
+    'All',
+    'General Physician',
+    'Gynecologist',
+    'Dermatologist',
+    'Pediatricians',
+    'Neurologist',
+    'Gastroenterologist',
+  ];
+
   return (
-    <div>
+    <Container fluid>
       <h1>Doctors</h1>
       {doctorList.length > 0 ? (
         doctorList.map((doctor) => (

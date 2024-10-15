@@ -3,7 +3,6 @@ import { Card, Button, Container, Row, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FaCalendarAlt, FaClock, FaPen, FaUser } from 'react-icons/fa'; // Import icons
 
-// Define the IStaff interface to match the populated staff details
 interface IStaff {
   _id: string;
   name: string;
@@ -12,7 +11,6 @@ interface IStaff {
   role: string;
 }
 
-// Define the IAppointment interface to match the backend response
 interface IAppointment {
   _id: string;
   staffId: IStaff | null; // staffId can either be populated staff object or null
@@ -26,6 +24,7 @@ const AppointmentListPage: React.FC = () => {
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAppointments();
@@ -50,6 +49,7 @@ const AppointmentListPage: React.FC = () => {
       setMessage('Error fetching appointments. Please try again later.');
     }
   };
+  
 
   const handleCancel = async (id: string) => {
     const confirmed = window.confirm('Are you sure you want to cancel this appointment?');
