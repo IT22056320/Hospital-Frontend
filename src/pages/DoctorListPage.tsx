@@ -43,7 +43,7 @@ const DoctorListPage: React.FC = () => {
       if (!response.ok) {
         throw new Error('Failed to fetch doctors');
       }
-      const doctors = await response.json();
+
 
       const doctors = await response.json();
       const doctorsWithDetails = await Promise.all(
@@ -115,7 +115,7 @@ const DoctorListPage: React.FC = () => {
       ) : (
         <p>No doctors found.</p>
       )}
-    </div>
+    </Container>
   );
 };
 

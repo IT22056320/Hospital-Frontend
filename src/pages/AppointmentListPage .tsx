@@ -24,7 +24,7 @@ const AppointmentListPage: React.FC = () => {
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const navigate = useNavigate();
-  const [message, setMessage] = useState<string | null>(null);
+  
 
   useEffect(() => {
     fetchAppointments();
